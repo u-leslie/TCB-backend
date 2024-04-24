@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  
+}
+
+model Admin {
+  id       String  @id @default(uuid())
+  names    String
+  email    String
+
+  phone    String
+  password String
+
+  @@unique([email, phone])
+}
+
+model Room {
+  id          String     @id @default(uuid())
+  publicId    String     @unique
+  width       Int
+  length      Int
+  caution     Int
+  description String
+  Invoice     Invoice[]
+}
+
+model Client {
+  id             String     @id @default(uuid())
+  companyName    String
+  representative String
+  tin            String
+  account        String
+  email          String     @unique
+  invoices       Invoice[]
+  number         String     @unique
+  caution        BigInt
+  M2             BigInt
+  StartDate      DateTime
+  EndDate        DateTime
+  amount         BigInt
+}
+
+model Invoice {
+  id                                        String   @id @default(uuid())
+  month                                     Month
+  year                                      Int
+  isPaid                                    Boolean  @default(false)
+  dueDate  String //  date in string format
+  clientId                                  String
+  client                                    Client  @relation(fields: [clientId], references: [id])
+  room                                      Room    @relation(fields: [roomId], references: [id])
+  roomId                                    String
+
+  @@unique([clientId, month, year])
+}
+
+enum Month {
+  JAN
+  FEB
+  MAR
+  APR
+  MAY
+  JUN
+  JUL
+  AUG
+  SEP
+  OCT
+  NOV
+  DEC
+}
